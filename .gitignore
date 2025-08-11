@@ -43,6 +43,8 @@
 # .idea/modules
 # *.iml
 # *.ipr
+.gradle
+gradle/wrapper/gradle-wrapper.jar
 
 # CMake
 cmake-build-*/
@@ -55,6 +57,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
+.idea
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
