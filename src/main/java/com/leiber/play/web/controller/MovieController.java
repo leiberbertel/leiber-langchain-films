@@ -56,31 +56,18 @@ public class MovieController {
     @PostMapping("/suggest")
     public ResponseEntity<String> generateMoviesSuggestion(@RequestBody SuggestRequestDto suggestRequestDto) {
         return ResponseEntity
-                .ok(this.leiberPlayAiService.generateMoviesSuggestion(platform,suggestRequestDto.userPreferences()));
+                .ok(this.leiberPlayAiService.
+                        generateMoviesSuggestion(platform,suggestRequestDto.userPreferences()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MovieDto> update(@PathVariable Long id, @RequestBody UpdateMovieDto movie) {
-        MovieDto movieDto = this.movieService.getById(id);
-        if (movieDto == null) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
         return ResponseEntity
                 .ok(this.movieService.update(id, movie));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<MovieDto> delete(@PathVariable Long id) {
-        MovieDto movieDto = this.movieService.getById(id);
-        if (movieDto == null) {
-            return ResponseEntity
-                    .notFound()
-                    .build();
-        }
-
         return ResponseEntity
                 .ok(this.movieService.delete(id));
     }
