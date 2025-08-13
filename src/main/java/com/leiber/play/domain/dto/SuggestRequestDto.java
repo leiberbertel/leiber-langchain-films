@@ -1,4 +1,6 @@
 package com.leiber.play.domain.dto;
 
-public record SuggestRequestDto(String userPreferences) {
+import jakarta.validation.constraints.NotBlank;
+
+public record SuggestRequestDto(@NotBlank(message = "Las preferencias son obligatorias") String userPreferences) {
 }
