@@ -5,6 +5,7 @@ import com.leiber.play.domain.dto.UpdateMovieDto;
 import com.leiber.play.domain.exception.MovieAlreadyExistsException;
 import com.leiber.play.domain.exception.MovieNotFoundException;
 import com.leiber.play.domain.repository.MovieRepository;
+import com.leiber.play.domain.util.Constant;
 import com.leiber.play.persistence.crud.CrudMovieEntity;
 import com.leiber.play.persistence.entity.MovieEntity;
 import com.leiber.play.persistence.mapper.MovieMapper;
@@ -41,6 +42,7 @@ public class MovieEntityRepository implements MovieRepository {
         }
 
         MovieEntity movieEntity = this.movieMapper.toEntity(movieDto);
+        movieEntity.setEstado(Constant.State.ACTIVE);
         return this.movieMapper.toDto(this.crudMovieEntity.save(movieEntity));
     }
 
