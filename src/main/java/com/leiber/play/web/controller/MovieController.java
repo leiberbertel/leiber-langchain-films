@@ -1,23 +1,87 @@
 package com.leiber.play.web.controller;
 
 import com.leiber.play.domain.dto.MovieDto;
+import com.leiber.play.domain.dto.SuggestRequestDto;
+import com.leiber.play.domain.dto.UpdateMovieDto;
+import com.leiber.play.domain.service.LeiberPlayAiService;
 import com.leiber.play.domain.service.MovieService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/movies")
 public class MovieController {
 
+    private final String platform;
     private final MovieService movieService;
+    private final LeiberPlayAiService leiberPlayAiService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(@Value("${spring.application.name}") String platform,
+                           MovieService movieService,
+                           LeiberPlayAiService leiberPlayAiService) {
+        this.platform = platform;
         this.movieService = movieService;
+        this.leiberPlayAiService = leiberPlayAiService;
     }
 
-    @GetMapping("/movies")
-    public List<MovieDto> getAll() {
-        return this.movieService.getAll();
+    @GetMapping()
+    public ResponseEntity<List<MovieDto>> getAll() {
+        return ResponseEntity
+                .ok(this.movieService.getAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieDto> getById(@PathVariable Long id) {
+        MovieDto movieDto = this.movieService.getById(id);
+        if (movieDto == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        return ResponseEntity.ok(movieDto);
+    }
+
+    @PostMapping()
+    public ResponseEntity<MovieDto> save(@RequestBody MovieDto movie) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(this.movieService.save(movie));
+    }
+
+    @PostMapping("/suggest")
+    public ResponseEntity<String> generateMoviesSuggestion(@RequestBody SuggestRequestDto suggestRequestDto) {
+        return ResponseEntity
+                .ok(this.leiberPlayAiService.generateMoviesSuggestion(platform,suggestRequestDto.userPreferences()));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieDto> update(@PathVariable Long id, @RequestBody UpdateMovieDto movie) {
+        MovieDto movieDto = this.movieService.getById(id);
+        if (movieDto == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        return ResponseEntity
+                .ok(this.movieService.update(id, movie));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<MovieDto> delete(@PathVariable Long id) {
+        MovieDto movieDto = this.movieService.getById(id);
+        if (movieDto == null) {
+            return ResponseEntity
+                    .notFound()
+                    .build();
+        }
+
+        return ResponseEntity
+                .ok(this.movieService.delete(id));
     }
 }

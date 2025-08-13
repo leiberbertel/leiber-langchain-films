@@ -1,9 +1,12 @@
 package com.leiber.play.persistence.mapper;
 
 import com.leiber.play.domain.dto.MovieDto;
+import com.leiber.play.domain.dto.UpdateMovieDto;
 import com.leiber.play.persistence.entity.MovieEntity;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -19,4 +22,14 @@ public interface MovieMapper {
     MovieDto toDto(MovieEntity movieEntity);
 
     List<MovieDto> toDto(Iterable<MovieEntity> entities);
+
+    @InheritInverseConfiguration
+    @Mapping(source = "genre", target = "genero", qualifiedByName = "genreToString")
+    @Mapping(source = "state", target = "estado", qualifiedByName = "booleanToString")
+    MovieEntity toEntity(MovieDto movieDto);
+
+    @Mapping(target = "titulo", source = "title")
+    @Mapping(target = "fechaEstreno", source = "releaseDate")
+    @Mapping(target = "clasificacion", source = "rating")
+    void updateEntityFromDto(UpdateMovieDto updateMovieDto, @MappingTarget MovieEntity movieEntity);
 }
