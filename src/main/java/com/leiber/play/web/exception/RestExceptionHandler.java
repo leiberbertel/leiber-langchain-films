@@ -1,8 +1,11 @@
 package com.leiber.play.web.exception;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.leiber.play.domain.Genre;
 import com.leiber.play.domain.exception.MovieAlreadyExistsException;
 import com.leiber.play.domain.exception.MovieNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -25,13 +28,26 @@ public class RestExceptionHandler {
         return ResponseEntity.badRequest().body(error);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Error> handleException(HttpMessageNotReadableException e) {
+        String type = "format-validation-error";
+        String message = "Ha ocurrido un error en el formato de los datos enviados.";
+
+        if (e.getCause() instanceof InvalidFormatException cause && cause.getTargetType() == Genre.class) {
+            type = "genre-not-found";
+            message = "El género enviado no es válido. Por favor, verifique los valores permitidos.";
+        }
+
+        Error error = new Error(type, message);
+        return ResponseEntity.badRequest().body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<Error>> handleException(MethodArgumentNotValidException e) {
         List<Error> errors = new ArrayList<>();
 
-        e.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.add(new Error(error.getField(), error.getDefaultMessage()));
-        });
+        e.getBindingResult().getFieldErrors().forEach(error ->
+                errors.add(new Error(error.getField(), error.getDefaultMessage())));
 
         return ResponseEntity.badRequest().body(errors);
     }
