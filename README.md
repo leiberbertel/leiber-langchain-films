@@ -19,7 +19,7 @@ Discover how to integrate language models into your applications to deliver inte
 
 ## Overview
 
-“leiber-langchain-films” is a robust Java-based framework that uses **Spring Boot** and **LangChain4j** to showcase the integration of language models for film data handling. This project serves as an experimental platform to explore:
+**leiber-langchain-films** is a REST API built with Java that uses Spring Boot and LangChain4j to demonstrate the integration of language models for handling movie data. This project serves as an experimental platform for exploring:
 
 - Interactive film queries and recommendations **_(In progress)_**
 
