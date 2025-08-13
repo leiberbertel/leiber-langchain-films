@@ -34,6 +34,6 @@ public class MovieService {
     }
 
     public MovieDto delete(Long id) {
-        return this.movieRepository.delete(id).orElse(null);
+        return this.movieRepository.delete(id);
     }
 }

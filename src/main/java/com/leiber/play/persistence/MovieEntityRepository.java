@@ -2,14 +2,16 @@ package com.leiber.play.persistence;
 
 import com.leiber.play.domain.dto.MovieDto;
 import com.leiber.play.domain.dto.UpdateMovieDto;
+import com.leiber.play.domain.exception.MovieAlreadyExistsException;
+import com.leiber.play.domain.exception.MovieNotFoundException;
 import com.leiber.play.domain.repository.MovieRepository;
+import com.leiber.play.domain.util.Constant;
 import com.leiber.play.persistence.crud.CrudMovieEntity;
 import com.leiber.play.persistence.entity.MovieEntity;
 import com.leiber.play.persistence.mapper.MovieMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class MovieEntityRepository implements MovieRepository {
@@ -35,7 +37,12 @@ public class MovieEntityRepository implements MovieRepository {
 
     @Override
     public MovieDto save(MovieDto movieDto) {
+        if (this.crudMovieEntity.findFirstByTitulo(movieDto.title()) != null) {
+            throw new MovieAlreadyExistsException(movieDto.title());
+        }
+
         MovieEntity movieEntity = this.movieMapper.toEntity(movieDto);
+        movieEntity.setEstado(Constant.State.ACTIVE);
         return this.movieMapper.toDto(this.crudMovieEntity.save(movieEntity));
     }
 
@@ -44,7 +51,7 @@ public class MovieEntityRepository implements MovieRepository {
         MovieEntity movieEntity = this.crudMovieEntity.findById(id).orElse(null);
 
         if (movieEntity == null) {
-            return null;
+            throw new MovieNotFoundException(id);
         }
 
         this.movieMapper.updateEntityFromDto(updateMovieDto, movieEntity);
@@ -53,10 +60,14 @@ public class MovieEntityRepository implements MovieRepository {
     }
 
     @Override
-    public Optional<MovieDto> delete(Long id) {
-        Optional<MovieEntity> movieEntity = this.crudMovieEntity.findById(id);
+    public MovieDto delete(Long id) {
+        MovieEntity movieEntity = this.crudMovieEntity.findById(id).orElse(null);
 
-        movieEntity.ifPresent(this.crudMovieEntity::delete);
-        return Optional.ofNullable(this.movieMapper.toDto(movieEntity.orElse(null)));
+        if (movieEntity == null) {
+            throw new MovieNotFoundException(id);
+        }
+
+        this.crudMovieEntity.deleteById(id);
+        return this.movieMapper.toDto(movieEntity);
     }
 }
