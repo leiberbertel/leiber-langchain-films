@@ -106,5 +106,5 @@ Please ensure code is well-formatted, documented, and includes tests when possib
 
 For questions or discussions, feel free to reach out!
 
-* GitHub: [leiberbertel](https://github.com/leiberbertel) (or link to Discussions/Issues)
+* GitHub: [leiberbertel](https://github.com/leiberbertel)
 * Email: *leiberbertel777@gmail.com*
